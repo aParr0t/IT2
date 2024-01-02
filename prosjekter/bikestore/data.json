@@ -1,0 +1,239 @@
+{
+  "users": [
+    {
+      "py/object": "src.User.User",
+      "id": 441427,
+      "name": "atas",
+      "history": []
+    },
+    {
+      "py/object": "src.User.User",
+      "id": 418093,
+      "name": "",
+      "history": [
+        {
+          "py/object": "src.User.HistoryItem",
+          "user_id": 418093,
+          "rental_bike_id": 543848,
+          "bike_id": 7053,
+          "bike_name": "Diamant Mogul 4",
+          "from_date": {
+            "py/object": "datetime.datetime",
+            "__reduce__": [
+              {
+                "py/type": "datetime.datetime"
+              },
+              [
+                "B+cMEhItEwM9BA=="
+              ]
+            ]
+          },
+          "to_date": {
+            "py/object": "datetime.datetime",
+            "__reduce__": [
+              {
+                "py/type": "datetime.datetime"
+              },
+              [
+                "B+cMEhQtEwM9BA=="
+              ]
+            ]
+          },
+          "price": 200,
+          "action": "rent"
+        },
+        {
+          "py/object": "src.User.HistoryItem",
+          "user_id": 418093,
+          "rental_bike_id": 543848,
+          "bike_id": 7053,
+          "bike_name": "Diamant Mogul 4",
+          "from_date": {
+            "py/object": "datetime.datetime",
+            "__reduce__": [
+              {
+                "py/type": "datetime.datetime"
+              },
+              [
+                "B+cMEhItEwM9BA=="
+              ]
+            ]
+          },
+          "to_date": {
+            "py/object": "datetime.datetime",
+            "__reduce__": [
+              {
+                "py/type": "datetime.datetime"
+              },
+              [
+                "B+cMEhQtEwM9BA=="
+              ]
+            ]
+          },
+          "price": 200,
+          "action": "return"
+        },
+        {
+          "py/object": "src.User.HistoryItem",
+          "user_id": 418093,
+          "rental_bike_id": 866124,
+          "bike_id": 7055,
+          "bike_name": "Vitus ZX-1 EVO Rival eTap intl. s\u00f8lv",
+          "from_date": {
+            "py/object": "datetime.datetime",
+            "__reduce__": [
+              {
+                "py/type": "datetime.datetime"
+              },
+              [
+                "B+cMFA4PIQOpyA=="
+              ]
+            ]
+          },
+          "to_date": {
+            "py/object": "datetime.datetime",
+            "__reduce__": [
+              {
+                "py/type": "datetime.datetime"
+              },
+              [
+                "B+cMFg4PIQOpyA=="
+              ]
+            ]
+          },
+          "price": 7680.0,
+          "action": "rent"
+        }
+      ]
+    }
+  ],
+  "active_user": {
+    "py/id": 4
+  },
+  "stores": [
+    {
+      "py/object": "src.Store.Store",
+      "id": 705386,
+      "name": "XXL",
+      "inventory": [
+        {
+          "py/object": "src.Store.RentableBike",
+          "id": 543848,
+          "bike_id": 7053,
+          "is_available": true,
+          "renter": null,
+          "from_date": null,
+          "to_date": null
+        },
+        {
+          "py/object": "src.Store.RentableBike",
+          "id": 4625,
+          "bike_id": 7057,
+          "is_available": true,
+          "renter": null,
+          "from_date": null,
+          "to_date": null
+        },
+        {
+          "py/object": "src.Store.RentableBike",
+          "id": 897541,
+          "bike_id": 7057,
+          "is_available": true,
+          "renter": null,
+          "from_date": null,
+          "to_date": null
+        },
+        {
+          "py/object": "src.Store.RentableBike",
+          "id": 68258,
+          "bike_id": 7057,
+          "is_available": true,
+          "renter": null,
+          "from_date": null,
+          "to_date": null
+        },
+        {
+          "py/object": "src.Store.RentableBike",
+          "id": 866124,
+          "bike_id": 7055,
+          "is_available": false,
+          "renter": {
+            "py/id": 4
+          },
+          "from_date": {
+            "py/id": 13
+          },
+          "to_date": {
+            "py/id": 14
+          }
+        },
+        {
+          "py/object": "src.Store.RentableBike",
+          "id": 954407,
+          "bike_id": 7055,
+          "is_available": true,
+          "renter": null,
+          "from_date": null,
+          "to_date": null
+        }
+      ],
+      "carts": {
+        "418093": []
+      }
+    },
+    {
+      "py/object": "src.Store.Store",
+      "id": 893679,
+      "name": "AntonSport",
+      "inventory": [],
+      "carts": {}
+    },
+    {
+      "py/object": "src.Store.Store",
+      "id": 855802,
+      "name": "Intersport",
+      "inventory": [],
+      "carts": {}
+    }
+  ],
+  "active_store": {
+    "py/id": 16
+  },
+  "bike_types": [
+    {
+      "py/object": "src.Bike.Bike",
+      "name": "Diamant Mogul 4",
+      "description": "Diamant Mogul 4 er en robust terrengsykkel til tur og trening. P\u00e5litelig Shimano girsystem. En god terrengsykkel til tur og trening. RST dempegaffel med 100 mm vandring og lockout gj\u00f8r sykkelen komfortabel \u00e5 sykle p\u00e5 og gj\u00f8r at. den lett kan takle litt r\u00f8ffere terreng. Shimano Acera drivverk 27 gir. Store lettrullende dekk fra Kenda. Kraftig hjulsett med dobbeltbunnede felger gir deg trygt feste og grep p\u00e5 varierende underlag. C4 lettvektskomponenter.",
+      "hour_price": 100,
+      "id": 7053
+    },
+    {
+      "py/object": "src.Bike.Bike",
+      "name": "Vitus ZX-1 EVO Rival eTap intl. s\u00f8lv",
+      "description": "Den nyeste Vitus ZX-1 har blitt pusset opp, omarbeidet og omkonstruert. Her kommer EVO. Lettere, stivere og raskere. Vi har g\u00e5tt helt tilbake til tegnebrettet for \u00e5 gj\u00f8re en grundig overhaling. Tester har vist at EVO har opptil 45 % mindre luftmotstand enn den forrige modellen. Men det betyr ingenting f\u00f8r du slipper den l\u00f8s ute og kjenner den p\u00e5 kroppen. I aerosykkelverdenen er det lett \u00e5 miste av syne det som virkelig betyr noe, blant all sjargongen og alle dataene. \u00c5 f\u00f8le seg rask er \u00e5 v\u00e6re rask, og du kan ikke f\u00f8le deg rask i en vindtunnel. Fartsglede finnes bare i den virkelige verden. Ute p\u00e5 veien. F\u00f8lelsen av \u00e5 sette kraft i pedalene og kjenne sykkelen b\u00f8lge under deg. Og jo raskere du kj\u00f8rer, jo lettere blir det. Det er her ZX-1 EVO utmerker seg. Det er sykkelen som samarbeider med deg n\u00e5r veien snirkler seg og vinden skifter. Det er aero.",
+      "hour_price": 200,
+      "id": 7055
+    },
+    {
+      "py/object": "src.Bike.Bike",
+      "name": "Cube Nuride Hybrid Performance 500 Allroad Gr\u00e5",
+      "description": "Vi designet Nuride Hybrid Performance Allroad for \u00e5 gj\u00f8re eventyr p\u00e5 to hjul tilgjengelig for alle - for hvem kunne vel ikke trenge litt frihjuling i livet? Valget av Easy Entry-, Trapeze- og herrerammer gj\u00f8r det enkelt \u00e5 finne den perfekte passformen. En dempegaffel p\u00e5 63 mm og gripevillige Schwalbe-dekk s\u00f8rger for komfortabel kj\u00f8ring, selv p\u00e5 t\u00f8ffe veier og stier. Kraftige hydrauliske skivebremser s\u00f8rger for at du alltid har kontroll, uansett v\u00e6r. Bosch Performance-drivverket med Smart System fungerer s\u00f8ml\u00f8st sammen med Shimanos brukervennlige 9-trinns gir, slik at du kan sykle lett p\u00e5 alle ruter.",
+      "hour_price": 50,
+      "id": 7057
+    }
+  ],
+  "time_offset": {
+    "py/reduce": [
+      {
+        "py/type": "datetime.timedelta"
+      },
+      {
+        "py/tuple": [
+          5,
+          0,
+          0
+        ]
+      }
+    ]
+  }
+}
