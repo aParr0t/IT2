@@ -10,7 +10,6 @@ from .GlobalState import GlobalState
 
 class ScreenManager:
     def __init__(self, global_state: GlobalState, clear_display: bool):
-        self.screens = {}
         self.global_state = global_state
         self.clear_display = clear_display
         self.history: list[str] = []
@@ -23,7 +22,7 @@ class ScreenManager:
 
     def set_start_screen(self, function: callable):
         self.start_screen = function
-    
+
     def start(self):
         to_run: callable = self.start_screen
         previous_function = None
@@ -31,18 +30,20 @@ class ScreenManager:
             self._clear_display()
             self.global_state.check_and_return_bikes()
             self.global_state.save("data.json")
-        
+
             # handle history circular buffer
             if previous_function:
                 history_names = [h.__name__ for h in self.history]
                 if previous_function.__name__ in history_names:
-                    self.history = self.history[: self.history.index(previous_function) + 1]
+                    self.history = self.history[
+                        : self.history.index(previous_function) + 1
+                    ]
                 else:
                     self.history.append(previous_function)
 
             previous_function = to_run
             to_run: callable = to_run()
- 
+
     def go_back(self):
         if len(self.history) > 1:
             self.history.pop()
@@ -124,7 +125,7 @@ class ScreenManager:
         questions = [
             {
                 "type": "list",
-                "message": f"Du er logget inn som \"{username}\". Dine valg:",
+                "message": f'Du er logget inn som "{username}". Dine valg:',
                 "name": "choice",
                 "choices": [
                     "Velg butikk",
@@ -226,7 +227,9 @@ class ScreenManager:
             days = seconds // (24 * 3600)
             hours = (seconds % (24 * 3600)) // 3600
             minutes = (seconds % 3600) // 60
-            print(f"Resetet tiden med {days} dager, {hours} timer og {minutes} minutter")
+            print(
+                f"Resetet tiden med {days} dager, {hours} timer og {minutes} minutter"
+            )
             self.global_state.reset_time()
             time.sleep(1)
             return self.stay
@@ -243,7 +246,6 @@ class ScreenManager:
             print(f"Spolte fremover {hours} timer")
             time.sleep(1)
             return self.stay
-
 
     def _user_pick_store_screen_function(self):
         state = self.global_state
@@ -292,7 +294,7 @@ class ScreenManager:
         for item in shopping_cart:
             bike_name = self.global_state.get_bike_type_by_id(item["bike_id"]).name
             bike_names.append(bike_name)
-        
+
         if bike_names:
             longest_name = max([len(name) for name in bike_names])
         else:
@@ -300,9 +302,12 @@ class ScreenManager:
 
         items = []
         for item, name in zip(shopping_cart, bike_names):
-            choice = Choice(item["rental_bike_id"], f"{name:<{longest_name+3}} {item["price"]:<7} kr")
+            choice = Choice(
+                item["rental_bike_id"],
+                f"{name:<{longest_name+3}} {item['price']:<7} kr",
+            )
             items.append(choice)
-        
+
         choices = [*items, "Gå tilbake"]
         if len(choices) > 1:
             choices.append("Gå til kassen")
@@ -350,7 +355,7 @@ class ScreenManager:
         for item in shopping_cart:
             from_date = item["from_date"].strftime("%d.%m.%Y %H:%M")
             to_date = item["to_date"].strftime("%d.%m.%Y %H:%M")
-            price = f"{item["price"]:>15} kr"
+            price = f"{item['price']:>15} kr"
             bikes.append(
                 f"{item['bike_name']:<{longest_name}} {price}\n          fra {from_date} til {to_date}"
             )
@@ -447,7 +452,12 @@ Totalpris: {total_price} kr\n""",
         store = self.global_state.active_store
         for item in shopping_cart:
             rental_bike_id = item["rental_bike_id"]
-            store.rent(rental_bike_id, self.global_state.active_user, item["from_date"], item["to_date"])
+            store.rent(
+                rental_bike_id,
+                self.global_state.active_user,
+                item["from_date"],
+                item["to_date"],
+            )
             self.global_state.active_user.save_to_history(
                 rental_bike_id,
                 item["bike_id"],
@@ -457,7 +467,6 @@ Totalpris: {total_price} kr\n""",
                 item["price"],
                 "rent",
             )
-
 
         time.sleep(1)
         self.global_state.clear_active_cart()
@@ -612,7 +621,7 @@ Totalpris: {total_price} kr\n""",
             },
         ]
         time_interval = prompt(questions)["time_interval"]
-        
+
         questions = [
             {
                 "type": "input",
@@ -648,7 +657,9 @@ Totalpris: {total_price} kr\n""",
         ]
         choice = prompt(questions)["choice"]
         if choice == "Bekreft og legg til i handlekurv":
-            rental_bike_id = [b.id for b in rentableBikes if b.bike_id == bike_id and b.is_available][0]
+            rental_bike_id = [
+                b.id for b in rentableBikes if b.bike_id == bike_id and b.is_available
+            ][0]
             print("rental_bike_id")
             print(rental_bike_id)
             item = {
@@ -663,6 +674,7 @@ Totalpris: {total_price} kr\n""",
             return self._user_store_screen_function
         elif choice == "Avbryt":
             return self._user_store_screen_function
+
 
 # endregion screens
 

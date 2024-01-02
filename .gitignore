@@ -3,6 +3,7 @@ UML
 scratch
 kapittel-1
 exams
+*.docx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
