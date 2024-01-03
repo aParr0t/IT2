@@ -103,8 +103,45 @@
           },
           "price": 7680.0,
           "action": "rent"
+        },
+        {
+          "py/object": "src.User.HistoryItem",
+          "user_id": 418093,
+          "rental_bike_id": 866124,
+          "bike_id": 7055,
+          "bike_name": "Vitus ZX-1 EVO Rival eTap intl. s\u00f8lv",
+          "from_date": {
+            "py/object": "datetime.datetime",
+            "__reduce__": [
+              {
+                "py/type": "datetime.datetime"
+              },
+              [
+                "B+cMFA4PIQOpyA=="
+              ]
+            ]
+          },
+          "to_date": {
+            "py/object": "datetime.datetime",
+            "__reduce__": [
+              {
+                "py/type": "datetime.datetime"
+              },
+              [
+                "B+cMFg4PIQOpyA=="
+              ]
+            ]
+          },
+          "price": 7680.0,
+          "action": "return"
         }
       ]
+    },
+    {
+      "py/object": "src.User.User",
+      "id": 859294,
+      "name": "f",
+      "history": []
     }
   ],
   "active_user": {
@@ -156,16 +193,10 @@
           "py/object": "src.Store.RentableBike",
           "id": 866124,
           "bike_id": 7055,
-          "is_available": false,
-          "renter": {
-            "py/id": 4
-          },
-          "from_date": {
-            "py/id": 13
-          },
-          "to_date": {
-            "py/id": 14
-          }
+          "is_available": true,
+          "renter": null,
+          "from_date": null,
+          "to_date": null
         },
         {
           "py/object": "src.Store.RentableBike",
@@ -194,10 +225,17 @@
       "name": "Intersport",
       "inventory": [],
       "carts": {}
+    },
+    {
+      "py/object": "src.Store.Store",
+      "id": 462537,
+      "name": "Biltema",
+      "inventory": [],
+      "carts": {}
     }
   ],
   "active_store": {
-    "py/id": 16
+    "py/id": 37
   },
   "bike_types": [
     {

@@ -9,6 +9,8 @@ from .GlobalState import GlobalState
 
 
 class ScreenManager:
+    GO_BACK = "Gå tilbake"
+
     def __init__(self, global_state: GlobalState, clear_display: bool):
         self.global_state = global_state
         self.clear_display = clear_display
@@ -45,7 +47,7 @@ class ScreenManager:
             to_run: callable = to_run()
 
     def go_back(self):
-        if len(self.history) > 1:
+        if len(self.history) > 0:
             self.history.pop()
             return self.history.pop()
 
@@ -99,10 +101,7 @@ class ScreenManager:
                 "type": "list",
                 "message": "Denne brukeren finnes ikke fra før, vil du opprette en ny?",
                 "name": "choice",
-                "choices": [
-                    "Ja",
-                    "Nei (gå tilbake)",
-                ],
+                "choices": ["Ja", self.GO_BACK],
             },
         ]
         choice = prompt(questions)["choice"]
@@ -110,7 +109,7 @@ class ScreenManager:
             user = self.global_state.add_user(self.props["name"])
             self.props = {"user": user}
             return self._sign_in_animation_screen_function
-        elif choice == "Nei (gå tilbake)":
+        elif choice == self.GO_BACK:
             return self.go_back
 
     def _sign_in_animation_screen_function(self):
@@ -131,12 +130,12 @@ class ScreenManager:
                     "Velg butikk",
                     "Se historikk",
                     "Se mine sykler",
-                    "Logg ut (gå tilbake)",
+                    self.GO_BACK,
                 ],
             },
         ]
         choice = prompt(questions)["choice"]
-        if choice == "Logg ut (gå tilbake)":
+        if choice == self.GO_BACK:
             return self._start_screen_function
         elif choice == "Velg butikk":
             return self._user_pick_store_screen_function
@@ -178,7 +177,7 @@ class ScreenManager:
                     "Sjekke sykkeltyper",
                     "Spol tid fremover",
                     "Sjekk brukere",
-                    "Logg ut (gå tilbake)",
+                    self.GO_BACK,
                 ],
             },
         ]
@@ -201,7 +200,7 @@ class ScreenManager:
             print()
             input("Trykk enter for å gå tilbake")
             return self.stay
-        elif choice == "Logg ut (gå tilbake)":
+        elif choice == self.GO_BACK:
             return self.go_back
 
     def _admin_time_screen_function(self):
@@ -214,12 +213,12 @@ class ScreenManager:
                 "choices": [
                     "Spol fremover",
                     "Reset tid",
-                    "Gå tilbake",
+                    self.GO_BACK,
                 ],
             },
         ]
         choice = prompt(questions)["choice"]
-        if choice == "Gå tilbake":
+        if choice == self.GO_BACK:
             return self.go_back
         elif choice == "Reset tid":
             offset = self.global_state.get_time() - datetime.datetime.now()
@@ -256,11 +255,11 @@ class ScreenManager:
                 "type": "list",
                 "message": f"Dine valg:",
                 "name": "choice",
-                "choices": [*stores, "Logg ut (gå tilbake)"],
+                "choices": [*stores, self.GO_BACK],
             },
         ]
         choice = prompt(questions)["choice"]
-        if choice == "Logg ut (gå tilbake)":
+        if choice == self.GO_BACK:
             return self.go_back
         else:
             store_name = choice
@@ -276,12 +275,12 @@ class ScreenManager:
                 "choices": [
                     "Vis ledige sykler",
                     "Vis handlekurv",
-                    "Logg ut (gå tilbake)",
+                    self.GO_BACK,
                 ],
             },
         ]
         choice = prompt(questions)["choice"]
-        if choice == "Logg ut (gå tilbake)":
+        if choice == self.GO_BACK:
             return self.go_back
         elif choice == "Vis ledige sykler":
             return self._available_bikes_screen_function
@@ -308,7 +307,7 @@ class ScreenManager:
             )
             items.append(choice)
 
-        choices = [*items, "Gå tilbake"]
+        choices = [*items, self.GO_BACK]
         if len(choices) > 1:
             choices.append("Gå til kassen")
         questions = [
@@ -320,7 +319,7 @@ class ScreenManager:
             },
         ]
         choice = prompt(questions)["choice"]
-        if choice == "Gå tilbake":
+        if choice == self.GO_BACK:
             return self.go_back
         elif choice == "Gå til kassen":
             return self._checkout_screen_function
@@ -405,7 +404,7 @@ Totalpris: {total_price} kr\n""",
                 "choices": [
                     "Vipps",
                     "Kort",
-                    "Gå tilbake",
+                    self.GO_BACK,
                 ],
             },
         ]
@@ -416,7 +415,7 @@ Totalpris: {total_price} kr\n""",
             print("Vipps til dette nummeret: 12345678")
             input("Trykk Enter når du har vippset")
             return self._payment_complete_screen_function
-        elif choice == "Gå tilbake":
+        elif choice == self.GO_BACK:
             return self.go_back
 
     def _payment_card_screen_function(self):
@@ -478,7 +477,7 @@ Totalpris: {total_price} kr\n""",
                 "type": "list",
                 "message": f"Dine valg:",
                 "name": "choice",
-                "choices": ["Lag ny butikk", "Velg butikk", "Logg ut (gå tilbake)"],
+                "choices": ["Lag ny butikk", "Velg butikk", self.GO_BACK],
             },
         ]
         choice = prompt(questions)["choice"]
@@ -486,7 +485,7 @@ Totalpris: {total_price} kr\n""",
             return self._create_store_screen_function
         elif choice == "Velg butikk":
             return self._store_pick_store_screen_function
-        elif choice == "Logg ut (gå tilbake)":
+        elif choice == self.GO_BACK:
             return self.go_back
 
     def _store_pick_store_screen_function(self):
@@ -498,11 +497,11 @@ Totalpris: {total_price} kr\n""",
                 "type": "list",
                 "message": f"Dine valg:",
                 "name": "choice",
-                "choices": [*stores, "Logg ut (gå tilbake)"],
+                "choices": [*stores, self.GO_BACK],
             },
         ]
         store_name = prompt(questions)["choice"]
-        if store_name == "Logg ut (gå tilbake)":
+        if store_name == self.GO_BACK:
             return self.go_back
         else:
             state.active_store = state.get_store(store_name)
@@ -518,12 +517,12 @@ Totalpris: {total_price} kr\n""",
                 "choices": [
                     "Vis lagerbeholdning",
                     "Endre lagerbeholdning",
-                    "Logg ut (gå tilbake)",
+                    self.GO_BACK,
                 ],
             },
         ]
         choice = prompt(questions)["choice"]
-        if choice == "Logg ut (gå tilbake)":
+        if choice == self.GO_BACK:
             return self.go_back
         elif choice == "Vis lagerbeholdning":
             print("Lagerbeholdning:")
@@ -599,11 +598,11 @@ Totalpris: {total_price} kr\n""",
                 "type": "list",
                 "message": "Hvilken sykkel vil du leie?",
                 "name": "bike_name",
-                "choices": [*bikes, "Gå tilbake"],
+                "choices": [*bikes, self.GO_BACK],
             },
         ]
         choice = prompt(questions)["bike_name"]
-        if choice == "Gå tilbake":
+        if choice == self.GO_BACK:
             return self.go_back
         else:
             bike_name = choice[choice.index(")") + 2 : choice.rfind("(") - 1]
