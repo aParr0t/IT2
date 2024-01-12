@@ -2,6 +2,8 @@ import random
 
 
 class Bike:
+    id = None
+
     def __init__(self, name: str, description: str, hour_price: int, id: int = None):
         self.id = id or random.randint(0, 1000000)
         self.name = name

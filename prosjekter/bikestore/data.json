@@ -142,10 +142,16 @@
       "id": 859294,
       "name": "f",
       "history": []
+    },
+    {
+      "py/object": "src.User.User",
+      "id": 793449,
+      "name": "jonas",
+      "history": []
     }
   ],
   "active_user": {
-    "py/id": 4
+    "py/id": 20
   },
   "stores": [
     {
@@ -235,7 +241,7 @@
     }
   ],
   "active_store": {
-    "py/id": 37
+    "py/id": 23
   },
   "bike_types": [
     {
