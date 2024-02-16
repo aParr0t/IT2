@@ -1,7 +1,8 @@
 import pygame
 
-from .GlobalState import GlobalState
-from .utils.Button import Button
+from ..GlobalState import GlobalState
+from ..utils.Button import Button
+from .Screens import SCREENS
 
 
 class MenuScreen:
@@ -39,4 +40,4 @@ class MenuScreen:
             y=y,
         )
         if self.button.isClicked():
-            self.state.current_screen = "game"
+            self.state.current_screen = SCREENS.GAME

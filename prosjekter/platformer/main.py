@@ -1,15 +1,18 @@
 import pygame
-from src.GameScreen import GameScreen
 from src.GlobalState import GlobalState
-from src.MenuScreen import MenuScreen
+from src.screens.GameScreen import GameScreen
+from src.screens.MenuScreen import MenuScreen
+from src.screens.ScoreScreen import ScoreScreen
+from src.screens.Screens import SCREENS
 
 
 class App:
     def __init__(self) -> None:
         self.global_state = GlobalState()
         self.screens = {
-            "game": GameScreen(self.global_state),
-            "menu": MenuScreen(self.global_state),
+            SCREENS.GAME: GameScreen(self.global_state),
+            SCREENS.MENU: MenuScreen(self.global_state),
+            SCREENS.SCORE: ScoreScreen(self.global_state),
         }
 
     def run(self):
