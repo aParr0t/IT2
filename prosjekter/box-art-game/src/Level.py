@@ -40,7 +40,6 @@ class Level:
     def __init__(
         self,
         level: list[str],
-        tile_width: int,
         origin: tuple[int, int] = (0, 0),
         start: tuple[int, int] = (0, 0),
     ):
@@ -50,70 +49,69 @@ class Level:
         self.start = start
 
         # init tiles
-        self.tile_mapping: dict[TileCategory, pygame.Surface] = {}
+        self.tile_mapping: dict[int, dict[TileCategory, pygame.Surface]] = {}
+
+        self._calculate_grid()
+
+    def add_tileset(self, tile_width: int):
+        if tile_width in self.tile_mapping:
+            return
+        self.tile_mapping[tile_width] = {}
+        tiles = self.tile_mapping[tile_width]
         for category in TileCategory:
-            surface = pygame.surface.Surface((tile_width, tile_width))
-            surface.fill(Colors.GRASS)
+            surface = pygame.surface.Surface((tile_width, tile_width), pygame.SRCALPHA)
             # add the surface to the dict
-            self.tile_mapping[category] = surface
+            tiles[category] = surface
         ## corner tiles
         road_padding = tile_width // 6
         road_border = road_padding // 2
         circle_radius = tile_width - road_padding
         # draw outer border
         pygame.draw.circle(
-            self.tile_mapping[TileCategory.Q1],
+            tiles[TileCategory.Q1],
             Colors.ROAD_BORDER,
             (tile_width, 0),
             circle_radius + road_border,
         )
         # draw road
         pygame.draw.circle(
-            self.tile_mapping[TileCategory.Q1],
+            tiles[TileCategory.Q1],
             Colors.ROAD,
             (tile_width, 0),
             circle_radius,
         )
         # draw inner border
         pygame.draw.circle(
-            self.tile_mapping[TileCategory.Q1],
+            tiles[TileCategory.Q1],
             Colors.ROAD_BORDER,
             (tile_width, 0),
             road_padding,
         )
         # draw inner grass
         pygame.draw.circle(
-            self.tile_mapping[TileCategory.Q1],
+            tiles[TileCategory.Q1],
             Colors.GRASS,
             (tile_width, 0),
             road_border,
         )
         # copy the first quarter to the other quarters
-        self.tile_mapping[TileCategory.Q2] = pygame.transform.rotate(
-            self.tile_mapping[TileCategory.Q1], 90
-        )
-        self.tile_mapping[TileCategory.Q3] = pygame.transform.rotate(
-            self.tile_mapping[TileCategory.Q1], 180
-        )
-        self.tile_mapping[TileCategory.Q4] = pygame.transform.rotate(
-            self.tile_mapping[TileCategory.Q1], 270
-        )
+        tiles[TileCategory.Q2] = pygame.transform.rotate(tiles[TileCategory.Q1], 90)
+        tiles[TileCategory.Q3] = pygame.transform.rotate(tiles[TileCategory.Q1], 180)
+        tiles[TileCategory.Q4] = pygame.transform.rotate(tiles[TileCategory.Q1], 270)
         # horizontal and vertical roads
         pygame.draw.rect(
-            self.tile_mapping[TileCategory.VERTICAL],
+            tiles[TileCategory.VERTICAL],
             Colors.ROAD_BORDER,
             (road_border, 0, tile_width - road_border * 2, tile_width),
         )
         pygame.draw.rect(
-            self.tile_mapping[TileCategory.VERTICAL],
+            tiles[TileCategory.VERTICAL],
             Colors.ROAD,
             (road_padding, 0, tile_width - road_padding * 2, tile_width),
         )
-        self.tile_mapping[TileCategory.HORIZONTAL] = pygame.transform.rotate(
-            self.tile_mapping[TileCategory.VERTICAL], 90
+        tiles[TileCategory.HORIZONTAL] = pygame.transform.rotate(
+            tiles[TileCategory.VERTICAL], 90
         )
-
-        self.calculate_grid()
 
     def _add_padding(self, level: list[str]):
         level = level.copy()
@@ -139,10 +137,11 @@ class Level:
     def set_tile(self, x: int, y: int, tile: str):
         if 0 <= x < self.get_width() and 0 <= y < self.get_height():
             self.level[y][x] = tile
+            self._calculate_grid()
         else:
             print(f"Tile ({x}, {y}) out of bounds")
 
-    def do_patterns_match(self, p1: list[str], p2: list[str]):
+    def _do_patterns_match(self, p1: list[str], p2: list[str]):
         # order of p1 and p2 is important!
         for i in range(3):
             for j in range(3):
@@ -154,20 +153,20 @@ class Level:
                     return False
         return True
 
-    def get_fitting_tile_category(self, x: int, y: int):
+    def _get_fitting_tile_category(self, x: int, y: int):
         x += 1
         y += 1
         p = [self.bordered[yy][x - 1 : x + 2] for yy in range(y - 1, y + 2)]
         for pattern, category in patterns.items():
             # order is important!
-            if self.do_patterns_match(pattern, p):
+            if self._do_patterns_match(pattern, p):
                 return category
         return TileCategory.EMPTY
 
     def get_fitting_tile(self, x: int, y: int):
         return self.tile_grid[y][x]
 
-    def calculate_grid(self):
+    def _calculate_grid(self):
         gw, gh = self.get_width(), self.get_height()
         self.tile_grid = [[None for _ in range(gw)] for _ in range(gh)]
 
@@ -182,17 +181,20 @@ class Level:
                 tile = self.get_tile(x, y)
                 if tile is None:
                     continue
-                self.tile_grid[y][x] = self.get_fitting_tile_category(x, y)
+                self.tile_grid[y][x] = self._get_fitting_tile_category(x, y)
 
     def as_surface(self, tile_width: int):
+        self.add_tileset(tile_width)
         tw = tile_width
         surface = pygame.surface.Surface(
-            (tw * self.get_width(), tw * self.get_height())
+            (tw * self.get_width(), tw * self.get_height()), pygame.SRCALPHA
         )
+        # make background transparent
         for x in range(self.get_width()):
             for y in range(self.get_height()):
                 surface.blit(
-                    self.tile_mapping[self.get_fitting_tile(x, y)], (x * tw, y * tw)
+                    self.tile_mapping[tile_width][self.get_fitting_tile(x, y)],
+                    (x * tw, y * tw),
                 )
         return surface
 

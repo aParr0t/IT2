@@ -19,32 +19,43 @@ class Car(pygame.sprite.Sprite):
         self.sprite_stack = SpriteStack(sprite_sheet, frame_width, frame_count)
         self.rect = pygame.Rect(x, y, width, height)
         self.speed = pygame.Vector2(0, 0)
-        self.speed_multiplier = 20
         self.angular_speed = 0
         self.angle = 0
-        self.steer_speed = 10
         self.frame_y_offset = frame_y_offset
+        self.max_speed = 600
+        self.max_angular_speed = 400
 
     def move(self, dt: float):
         self.angle += self.angular_speed * dt
         self.rect.x += self.speed.x * dt
         self.rect.y += self.speed.y * dt
 
-        self.angular_speed *= 0.95
-        self.speed *= 0.95
-        if self.speed.length() < 1:
+        if self.speed.length() < 10:
             self.speed = pygame.Vector2(0, 0)
 
-    def accelerate(self):
-        speed_vec = pygame.Vector2(1, 0).rotate(-self.angle)
-        speed_vec *= self.speed_multiplier
+    def friction_speed(self, dt: float):
+        # incorporate dt into the friction force
+        friction_force = 2 * dt
+        self.speed *= 1 - friction_force
+
+    def friction_angular_speed(self):
+        self.angular_speed *= 0.95
+
+    def accelerate(self, speed: float):
+        speed_vec = pygame.Vector2(speed, 0).rotate(-self.angle)
         self.speed += speed_vec
+        self.speed.scale_to_length(min(self.max_speed, self.speed.length()))
 
-    def decelerate(self):
-        self.speed *= 0.90
+    def brake(self, dt: float):
+        # incorporate dt into the brake force
+        brake_force = 0.2 * dt
+        self.speed *= 1 - brake_force
 
-    def steer(self, direction: int):
-        self.angular_speed += direction * self.steer_speed
+    def steer(self, direction: int, dt: float):
+        self.angular_speed += direction * dt
+        self.angular_speed = max(
+            -self.max_angular_speed, min(self.max_angular_speed, self.angular_speed)
+        )
 
     def surface(self):
         surface = self.sprite_stack.surface(self.frame_y_offset, self.angle)

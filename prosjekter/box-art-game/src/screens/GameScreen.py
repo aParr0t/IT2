@@ -1,4 +1,3 @@
-import random
 import time
 
 import pygame
@@ -6,59 +5,47 @@ import pygame
 from .. import Colors
 from ..Car import Car
 from ..GlobalState import GlobalState
+from ..utils.Path import path
+from .Screen import Screen
 from .Screens import SCREENS
 
 
-class GameScreen:
+class GameScreen(Screen):
     def __init__(self, state: GlobalState):
-        self.state = state
+        super().__init__(state)
+        self.tile_width = 256
+        self.font = pygame.font.Font(path.rel_path("assets/pixel-font.ttf"), 72)
+        self.trail_duration = 1
         self.reset()
-        # pipe_image = pygame.image.load("assets/pipe.png").convert_alpha()
-        # self.pipe_sprite = scale_to_height(pipe_image, 200)
-        self.score_font = pygame.font.Font(None, 36)
+
+    def reset(self):
+        self.trails = [[], []]
+        self.level_surface = self.state.level.as_surface(self.tile_width)
         self.player_car = Car(
-            "assets/PurpleCar.png",
+            path.rel_path("assets/PurpleCar.png"),
             frame_width=16,
             frame_count=8,
             frame_y_offset=1,
-            x=self.state.level.start[0] * self.state.tile_width,
-            y=self.state.level.start[1] * self.state.tile_width,
-            width=48,
-            height=48,
+            x=self.state.level.start[0] * self.tile_width,
+            y=self.state.level.start[1] * self.tile_width,
+            width=64,
+            height=64,
         )
         self.cars = [self.player_car]
-        self.trails = [[], []]
-        self.trail_duration = 1
 
-    def reset(self):
-        self.score = 0
-
-    def tick(self, dt):
-        # event handling
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.state.running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_e:
-                    self.state.current_screen = SCREENS.EDITOR
-
-        self.update(dt)
-        self.render()
+    def _handle_events(self, event: pygame.event.Event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_e:
+                self.state.change_screen(SCREENS.EDITOR)
 
     def render(self):
-        keys = pygame.key.get_pressed()
-
         # background
         self.state.screen.fill(Colors.GRASS)
 
         cx, cy = self.state.camera.pos
-        self.state.screen.blit(
-            self.state.level.as_surface(self.state.tile_width), (-cx, -cy)
-        )
 
         # draw the trail
         for trail in self.trails:
-            # pygame.draw.circle(self.state.screen, Colors.BLACK, pos[0] - (cx, cy), 2)
             # draw a line between the points
             for i in range(len(trail) - 1):
                 distance = trail[i][0] - trail[i + 1][0]
@@ -71,35 +58,48 @@ class GameScreen:
                         5,
                     )
 
+        # draw the level
+        self.state.screen.blit(self.level_surface, (-cx, -cy))
+
         # draw cars, scaled up to half the size of the tiles
         for car in self.cars:
             surface = car.surface()
             self.state.screen.blit(surface, (car.rect.x - cx, car.rect.y - cy))
 
+        # draw ui and text
+        stats = self.font.render(
+            f"Fps: {self.state.clock.get_fps():.0f}", True, Colors.BLACK
+        )
+        self.state.screen.blit(stats, (10, 10))
+
     def update(self, dt: float):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            self.player_car.accelerate()
-        if keys[pygame.K_s]:
-            self.player_car.decelerate()
+            self.player_car.accelerate(10)
+        elif keys[pygame.K_s]:
+            self.player_car.brake(dt)
+        else:
+            self.player_car.friction_speed(dt)
         if keys[pygame.K_a]:
-            self.player_car.steer(1)
-        if keys[pygame.K_d]:
-            self.player_car.steer(-1)
+            self.player_car.steer(600, dt)
+        elif keys[pygame.K_d]:
+            self.player_car.steer(-600, dt)
+        else:
+            self.player_car.friction_angular_speed()
 
         for car in self.cars:
             car.move(dt)
 
         self.state.camera.follow_center(self.player_car.rect.topleft, dt)
 
-        if not self.is_car_on_road(self.player_car):
-            wheels = self.player_car.get_wheel_positions()
-            for i, wheel in enumerate(wheels):
-                self.trails[i].append((wheel, time.time()))
+        wheels = self.player_car.get_wheel_positions()
+        for i, wheel in enumerate(wheels):
+            self.trails[i].append((wheel, time.time()))
+
         for trail in self.trails:
-            for i, pos in enumerate(trail):
-                if time.time() - pos[1] > 1:
-                    trail.pop(i)
+            if len(trail) > 0:
+                if time.time() - trail[0][1] > 1:
+                    trail.pop(0)
 
     def is_car_on_road(self, car: Car):
         return self.car_on_road_percentage(car) > 0.5
@@ -107,13 +107,13 @@ class GameScreen:
     def car_on_road_percentage(self, car: Car):
         # if the car rect is outside the level, return 0
         if (
-            not self.state.level.as_surface(self.state.tile_width)
+            not self.state.level.as_surface(self.tile_width)
             .get_rect()
             .contains(car.rect)
         ):
             return 0
 
-        road = self.state.level.collision_surface(self.state.tile_width)
+        road = self.state.level.collision_surface(self.tile_width)
         # make a surface for the car filled with white
         car_surface = pygame.surface.Surface(car.rect.size)
         car_surface.fill("red")

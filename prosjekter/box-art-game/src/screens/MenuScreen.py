@@ -3,12 +3,14 @@ import pygame
 from .. import Colors
 from ..GlobalState import GlobalState
 from ..utils.Button import Button
+from ..utils.Path import path
+from .Screen import Screen
 from .Screens import SCREENS
 
 
-class MenuScreen:
+class MenuScreen(Screen):
     def __init__(self, state: GlobalState):
-        self.state = state
+        super().__init__(state)
         self.half_screen_w = self.state.SCREEN_W // 2
         self.half_screen_h = self.state.SCREEN_H // 2
         self.button = Button(
@@ -18,19 +20,12 @@ class MenuScreen:
             "Start",
             "red",
         )
-        font = pygame.font.Font("assets/pixel-font.ttf", 72)
+        font = pygame.font.Font(path.rel_path("assets/pixel-font.ttf"), 72)
         self.title = font.render("Speed Circuit", True, Colors.BLACK)
-        self.background = pygame.image.load("assets/background.png")
+        self.background = pygame.image.load(path.rel_path("assets/background.png"))
         self.background = pygame.transform.smoothscale(
             self.background, (self.state.SCREEN_W, self.state.SCREEN_H)
         )
-
-    def tick(self, dt):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.state.running = False
-        self.update()
-        self.render()
 
     def render(self):
         self.state.screen.fill(Colors.WHITE)
@@ -55,6 +50,6 @@ class MenuScreen:
             y=y,
         )
 
-    def update(self):
+    def update(self, dt: float = 0.0):
         if self.button.isClicked():
-            self.state.current_screen = SCREENS.GAME
+            self.state.change_screen(SCREENS.GAME)
