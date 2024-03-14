@@ -22,7 +22,7 @@ class GlobalState:
         self.level: Level = self._load_level()
         self.camera = Camera.Camera(self)
 
-    def set_screens(self, screens):
+    def init_screens(self, screens):
         self.screens = screens
 
     def _load_level(self):

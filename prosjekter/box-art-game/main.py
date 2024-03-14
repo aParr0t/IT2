@@ -11,9 +11,11 @@ from src.utils.Path import path
 
 class App:
     def __init__(self) -> None:
-        path.set_base_path(os.path.dirname(__file__))
+        path.set_base_path(
+            os.path.dirname(__file__)
+        )  # set the base path for the project
         self.state = GlobalState()
-        self.state.set_screens(
+        self.state.init_screens(
             {
                 SCREENS.GAME: GameScreen(self.state),
                 SCREENS.MENU: MenuScreen(self.state),
@@ -24,9 +26,11 @@ class App:
 
     def run(self):
         while self.state.running:
+            # check if the screen has changed
             if self.prev_screen != self.state.current_screen:
                 self.state.screens[self.state.current_screen].reset()
                 self.prev_screen = self.state.current_screen
+
             dt = self.state.clock.tick(120) / 1000
             self.state.screens[self.state.current_screen].tick(dt)
             pygame.display.flip()

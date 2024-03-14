@@ -16,89 +16,94 @@ class TileCategory(Enum):
     HORIZONTAL = "horizontal"
 
 
-# i think the order of the tiles matters
-# because the more complicated tiles would not get considered if the simpler
-# tiles were considered before the more complicated ones
-patterns = {
-    ("...", ".^<", "..."): TileCategory.Q1,
-    (".v.", ".>.", "..."): TileCategory.Q1,
-    ("...", ">^.", "..."): TileCategory.Q2,
-    (".v.", ".<.", "..."): TileCategory.Q2,
-    ("...", ">v.", "..."): TileCategory.Q3,
-    ("...", ".<.", ".^."): TileCategory.Q3,
-    ("...", ".v<", "..."): TileCategory.Q4,
-    ("...", ".>.", ".^."): TileCategory.Q4,
-    ("...", ".^.", "..."): TileCategory.VERTICAL,
-    ("...", ".v.", "..."): TileCategory.VERTICAL,
-    ("...", ".<.", "..."): TileCategory.HORIZONTAL,
-    ("...", ".>.", "..."): TileCategory.HORIZONTAL,
-    ("...", "...", "..."): TileCategory.EMPTY,
-}
-
-
 class Level:
+    # i think the order of the tiles matters
+    # because the more complicated tiles would not get considered if the simpler
+    # tiles were considered before the more complicated ones
+    PATTERNS = {
+        ("...", ".^<", "..."): TileCategory.Q1,
+        (".v.", ".>.", "..."): TileCategory.Q1,
+        ("...", ">^.", "..."): TileCategory.Q2,
+        (".v.", ".<.", "..."): TileCategory.Q2,
+        ("...", ">v.", "..."): TileCategory.Q3,
+        ("...", ".<.", ".^."): TileCategory.Q3,
+        ("...", ".v<", "..."): TileCategory.Q4,
+        ("...", ".>.", ".^."): TileCategory.Q4,
+        ("...", ".^.", "..."): TileCategory.VERTICAL,
+        ("...", ".v.", "..."): TileCategory.VERTICAL,
+        ("...", ".<.", "..."): TileCategory.HORIZONTAL,
+        ("...", ".>.", "..."): TileCategory.HORIZONTAL,
+        ("...", "...", "..."): TileCategory.EMPTY,
+    }
+
     def __init__(
         self,
         level: list[str],
         origin: tuple[int, int] = (0, 0),
         start: tuple[int, int] = (0, 0),
     ):
+        # add padding to the level so that the level is surrounded by "."
+        # this is to prevent index out of bounds errors
         level = self._add_padding(level)
         self.level = [list(row) for row in level]
         self.origin = origin
         self.start = start
 
-        # init tiles
         self.tile_mapping: dict[int, dict[TileCategory, pygame.Surface]] = {}
-
         self._calculate_grid()
 
-    def add_tileset(self, tile_width: int):
+    def _add_tileset(self, tile_width: int):
+        # check if the tileset already exists
         if tile_width in self.tile_mapping:
             return
+
+        # create a new tileset
         self.tile_mapping[tile_width] = {}
         tiles = self.tile_mapping[tile_width]
+
+        # create a surface for each tile category
         for category in TileCategory:
             surface = pygame.surface.Surface((tile_width, tile_width), pygame.SRCALPHA)
-            # add the surface to the dict
             tiles[category] = surface
-        ## corner tiles
+
+        # create corner tiles
         road_padding = tile_width // 6
         road_border = road_padding // 2
         circle_radius = tile_width - road_padding
-        # draw outer border
+        ## draw outer border
         pygame.draw.circle(
             tiles[TileCategory.Q1],
             Colors.ROAD_BORDER,
             (tile_width, 0),
             circle_radius + road_border,
         )
-        # draw road
+        ## draw road
         pygame.draw.circle(
             tiles[TileCategory.Q1],
             Colors.ROAD,
             (tile_width, 0),
             circle_radius,
         )
-        # draw inner border
+        ## draw inner border
         pygame.draw.circle(
             tiles[TileCategory.Q1],
             Colors.ROAD_BORDER,
             (tile_width, 0),
             road_padding,
         )
-        # draw inner grass
+        ## draw inner grass
         pygame.draw.circle(
             tiles[TileCategory.Q1],
             Colors.GRASS,
             (tile_width, 0),
             road_border,
         )
-        # copy the first quarter to the other quarters
+        # copy the first corner quarter to the other quarters
         tiles[TileCategory.Q2] = pygame.transform.rotate(tiles[TileCategory.Q1], 90)
         tiles[TileCategory.Q3] = pygame.transform.rotate(tiles[TileCategory.Q1], 180)
         tiles[TileCategory.Q4] = pygame.transform.rotate(tiles[TileCategory.Q1], 270)
-        # horizontal and vertical roads
+
+        # create horizontal and vertical roads
         pygame.draw.rect(
             tiles[TileCategory.VERTICAL],
             Colors.ROAD_BORDER,
@@ -109,11 +114,13 @@ class Level:
             Colors.ROAD,
             (road_padding, 0, tile_width - road_padding * 2, tile_width),
         )
+        # copy the vertical road to the horizontal road
         tiles[TileCategory.HORIZONTAL] = pygame.transform.rotate(
             tiles[TileCategory.VERTICAL], 90
         )
 
     def _add_padding(self, level: list[str]):
+        # add padding to the level so that the level is surrounded by "."
         level = level.copy()
         if level[0].count(".") != len(level[0]):
             level = ["." * len(level[0])] + level
@@ -142,7 +149,8 @@ class Level:
             print(f"Tile ({x}, {y}) out of bounds")
 
     def _do_patterns_match(self, p1: list[str], p2: list[str]):
-        # order of p1 and p2 is important!
+        # order of p1 and p2 is important! p1 is the pattern and p2 is the tile
+        # p1 as precedence over p2
         for i in range(3):
             for j in range(3):
                 if p1[i][j] == p2[i][j]:
@@ -154,19 +162,25 @@ class Level:
         return True
 
     def _get_fitting_tile_category(self, x: int, y: int):
+        # get the 3x3 pattern around the tile
+        # add 1 to x and y because of the level border
         x += 1
         y += 1
         p = [self.bordered[yy][x - 1 : x + 2] for yy in range(y - 1, y + 2)]
-        for pattern, category in patterns.items():
+
+        # return the pattern that matches any of the patterns, if not return empty
+        for pattern, category in self.PATTERNS.items():
             # order is important!
             if self._do_patterns_match(pattern, p):
                 return category
         return TileCategory.EMPTY
 
-    def get_fitting_tile(self, x: int, y: int):
-        return self.tile_grid[y][x]
-
     def _calculate_grid(self):
+        # create a grid of tile categories, this is used to draw the level
+        # the grid is based on the level, and uses the PATTERNS to determine
+        # the categories for each tile
+
+        # initialize the grid
         gw, gh = self.get_width(), self.get_height()
         self.tile_grid = [[None for _ in range(gw)] for _ in range(gh)]
 
@@ -176,6 +190,7 @@ class Level:
             for x in range(gw):
                 self.bordered[y + 1][x + 1] = self.get_tile(x, y)
 
+        # calculate the grid
         for y in range(gh):
             for x in range(gw):
                 tile = self.get_tile(x, y)
@@ -184,21 +199,24 @@ class Level:
                 self.tile_grid[y][x] = self._get_fitting_tile_category(x, y)
 
     def as_surface(self, tile_width: int):
-        self.add_tileset(tile_width)
+        # create a surface of the level
+        self._add_tileset(tile_width)
         tw = tile_width
         surface = pygame.surface.Surface(
             (tw * self.get_width(), tw * self.get_height()), pygame.SRCALPHA
         )
-        # make background transparent
+
+        # draw the level
         for x in range(self.get_width()):
             for y in range(self.get_height()):
                 surface.blit(
-                    self.tile_mapping[tile_width][self.get_fitting_tile(x, y)],
+                    self.tile_mapping[tile_width][self.tile_grid[y][x]],
                     (x * tw, y * tw),
                 )
         return surface
 
     def serialize(self):
+        # serialize the level for saving
         return {
             "level": ["".join(row) for row in self.level],
             "origin": self.origin,
@@ -206,6 +224,8 @@ class Level:
         }
 
     def collision_surface(self, tile_width: int):
+        # create a surface for collision detection
+
         # the road is white and the grass is black
         px_array = pygame.PixelArray(self.as_surface(tile_width))
         px_array.replace(Colors.ROAD, Colors.WHITE)

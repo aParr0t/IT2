@@ -10,6 +10,7 @@ class SpriteStack:
         self.sprite_sheet = pygame.image.load(sprite_sheet).convert_alpha()
         self.sprites = []
         self.frame_size: pygame.Vector2 = pygame.Vector2(frame_size)
+        # cut the sprite sheet into individual sprites
         for i in range(frame_count):
             self.sprites.append(
                 self.sprite_sheet.subsurface(
@@ -21,6 +22,8 @@ class SpriteStack:
     def surface(self, y_offset: int, angle: float = 0):
         # render the stack of sprites as a single surface,
         # with the sprites stacked on top of each other
+
+        # creates a surface with that is large enough to contain all the sprites
         surface = pygame.surface.Surface(
             (
                 self.frame_size.x,
@@ -28,12 +31,14 @@ class SpriteStack:
             ),
             pygame.SRCALPHA,
         ).convert_alpha()
+
         surface.fill((255, 0, 0, 0))
+
         # start by drawing the bottom sprite first, then increase the position
         # at which the next sprite is drawn by x_offset and y_offset
         half_w = self.frame_size.x // 2
         half_h = self.frame_size.y // 2
-        x, y = half_w, surface.get_height() - half_w
+        x, y = half_w, surface.get_height() - half_h
         for sprite in self.sprites:
             blitRotate(surface, sprite, (x, y), (half_w, half_h), angle)
             y -= y_offset

@@ -110,6 +110,8 @@ class EditScreen(Screen):
 
         if keys[pygame.K_s]:
             self.state.level.start = self.get_hovered_tile()
+        if keys[pygame.K_x]:
+            self.state.level.set_tile(*self.get_hovered_tile(), ".")
 
         # if mouse is down, place a tile
         if pygame.mouse.get_pressed()[0]:

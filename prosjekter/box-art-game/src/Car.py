@@ -30,6 +30,7 @@ class Car(pygame.sprite.Sprite):
         self.rect.x += self.speed.x * dt
         self.rect.y += self.speed.y * dt
 
+        # if the speed is very low, set it to 0
         if self.speed.length() < 10:
             self.speed = pygame.Vector2(0, 0)
 
@@ -58,12 +59,14 @@ class Car(pygame.sprite.Sprite):
         )
 
     def surface(self):
+        # get the surface of the car
         surface = self.sprite_stack.surface(self.frame_y_offset, self.angle)
         # scale the surface to the size of the car
         surface = pygame.transform.scale(surface, (self.rect.width, self.rect.height))
         return surface
 
     def get_wheel_positions(self):
+        # get the positions of the back wheels
         base_vector = pygame.Vector2(self.rect.center)
         angle = self.angle
         half_width = self.rect.width / 2

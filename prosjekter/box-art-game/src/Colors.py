@@ -8,4 +8,5 @@ ROAD_BORDER = pygame.Color("#808080")
 
 
 def color_int(color: pygame.Color) -> int:
+    # convert a pygame.Color to an integer
     return color.r << 16 | color.g << 8 | color.b

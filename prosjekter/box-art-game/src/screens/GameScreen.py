@@ -4,6 +4,7 @@ import pygame
 
 from .. import Colors
 from ..Car import Car
+from ..Coin import Coin
 from ..GlobalState import GlobalState
 from ..utils.Path import path
 from .Screen import Screen
@@ -26,12 +27,23 @@ class GameScreen(Screen):
             frame_width=16,
             frame_count=8,
             frame_y_offset=1,
-            x=self.state.level.start[0] * self.tile_width,
-            y=self.state.level.start[1] * self.tile_width,
+            x=self.state.level.start[0] * self.tile_width + self.tile_width / 2,
+            y=self.state.level.start[1] * self.tile_width + self.tile_width / 2,
             width=64,
             height=64,
         )
         self.cars = [self.player_car]
+        self._init_coins()
+
+    def _init_coins(self):
+        # create the coins on each level tile that is road
+        self.coins: list[Coin] = []
+        for y, row in enumerate(self.state.level.level):
+            for x, tile in enumerate(row):
+                if tile != ".":
+                    cx = x * self.tile_width + self.tile_width / 2
+                    cy = y * self.tile_width + self.tile_width / 2
+                    self.coins.append(Coin(cx, cy, 64, 64))
 
     def _handle_events(self, event: pygame.event.Event):
         if event.type == pygame.KEYDOWN:
@@ -61,10 +73,28 @@ class GameScreen(Screen):
         # draw the level
         self.state.screen.blit(self.level_surface, (-cx, -cy))
 
+        # draw coins
+        for coin in self.coins:
+            coin.render(self.state.screen, cx, cy)
+            # draw coin rect
+            # pygame.draw.rect(
+            #     self.state.screen,
+            #     Colors.BLACK,
+            #     coin.rect.move(-cx, -cy),
+            #     1,
+            # )
+
         # draw cars, scaled up to half the size of the tiles
         for car in self.cars:
             surface = car.surface()
             self.state.screen.blit(surface, (car.rect.x - cx, car.rect.y - cy))
+            # draw car outline
+            # pygame.draw.rect(
+            #     self.state.screen,
+            #     Colors.BLACK,
+            #     car.rect.move(-cx, -cy),
+            #     1,
+            # )
 
         # draw ui and text
         stats = self.font.render(
@@ -100,6 +130,13 @@ class GameScreen(Screen):
             if len(trail) > 0:
                 if time.time() - trail[0][1] > 1:
                     trail.pop(0)
+
+        # collect coins
+        for coin in self.coins:
+            if self.player_car.rect.colliderect(coin.rect):
+                coin.get_collected()
+            if coin.animation_done():
+                self.coins.remove(coin)
 
     def is_car_on_road(self, car: Car):
         return self.car_on_road_percentage(car) > 0.5

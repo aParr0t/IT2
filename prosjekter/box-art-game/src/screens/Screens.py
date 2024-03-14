@@ -1,4 +1,7 @@
-class SCREENS:
-    GAME = "game"
-    MENU = "menu"
-    EDITOR = "editor"
+from enum import Enum
+
+
+class SCREENS(Enum):
+    GAME = 0
+    MENU = 1
+    EDITOR = 2
