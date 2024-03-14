@@ -138,10 +138,10 @@ class GameScreen(Screen):
             if coin.animation_done():
                 self.coins.remove(coin)
 
-    def is_car_on_road(self, car: Car):
-        return self.car_on_road_percentage(car) > 0.5
+    def _is_car_on_road(self, car: Car):
+        return self._car_on_road_percentage(car) > 0.5
 
-    def car_on_road_percentage(self, car: Car):
+    def _car_on_road_percentage(self, car: Car):
         # if the car rect is outside the level, return 0
         if (
             not self.state.level.as_surface(self.tile_width)

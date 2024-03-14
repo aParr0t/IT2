@@ -6,12 +6,11 @@ class Button:
         self.display = display
         self.width = width
         self.height = height
-        self.text = text
         self.color = color
         self.x = x
         self.y = y
         font = pygame.font.SysFont("Arial", 25)
-        self.text = font.render(self.text, True, (0, 0, 0))
+        self.text = font.render(text, True, (0, 0, 0))
 
     def draw(self, **kwargs):
         self.x = kwargs.get("x", self.x)
@@ -27,7 +26,7 @@ class Button:
             ),
         )
 
-    def isClicked(self):
+    def is_clicked(self):
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         if (

@@ -11,7 +11,6 @@ class EditScreen(Screen):
     def __init__(self, state: GlobalState):
         super().__init__(state)
         self.reset()
-        self.score_font = pygame.font.Font(None, 36)
         self.tile_width = 64
         font = pygame.font.Font(path.rel_path("assets/pixel-font.ttf"), 72)
         self.arrow_images = {
@@ -26,7 +25,6 @@ class EditScreen(Screen):
         }
 
     def reset(self):
-        self.score = 0
         self.state.camera.pos = pygame.Vector2(0, 0)
 
     def _handle_events(self, event: pygame.event.Event):
@@ -44,8 +42,8 @@ class EditScreen(Screen):
 
         # draw tiles
         tw = self.tile_width
-        tile_region = self.get_visible_tile_region()
-        hovered_tile = self.get_hovered_tile()
+        tile_region = self._get_visible_tile_region()
+        hovered_tile = self._get_hovered_tile()
         ox, oy = self.state.level.origin
         self.state.screen.blit(
             self.state.level.as_surface(self.tile_width), (ox * tw - cx, oy * tw - cy)
@@ -109,13 +107,13 @@ class EditScreen(Screen):
         self.state.camera.pos += pygame.Vector2(dx, dy)
 
         if keys[pygame.K_s]:
-            self.state.level.start = self.get_hovered_tile()
+            self.state.level.start = self._get_hovered_tile()
         if keys[pygame.K_x]:
-            self.state.level.set_tile(*self.get_hovered_tile(), ".")
+            self.state.level.set_tile(*self._get_hovered_tile(), ".")
 
         # if mouse is down, place a tile
         if pygame.mouse.get_pressed()[0]:
-            x, y = self.get_hovered_tile()
+            x, y = self._get_hovered_tile()
             if not (
                 0 <= x < self.state.level.get_width()
                 and 0 <= y < self.state.level.get_height()
@@ -138,13 +136,13 @@ class EditScreen(Screen):
                 )
                 self.start_edit = None
 
-    def get_hovered_tile(self):
+    def _get_hovered_tile(self):
         mx, my = pygame.mouse.get_pos()
         cx, cy = self.state.camera.pos
         tw = self.tile_width
         return [int(x) for x in [(mx + cx) // tw, (my + cy) // tw]]
 
-    def get_visible_tile_region(self):
+    def _get_visible_tile_region(self):
         cx, cy = self.state.camera.pos
         tw = self.tile_width
         return [

@@ -2,8 +2,6 @@ import time
 
 import pygame
 
-from .SpriteStack import SpriteStack
-
 
 class Coin(pygame.sprite.Sprite):
     def __init__(
@@ -17,7 +15,7 @@ class Coin(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x, y, width, height)
         self.rect.move_ip(-width // 2, -height // 2)
         self.speed = pygame.Vector2(0, 0)
-        self.collect_time = None  # time when the coin was collected
+        self.collect_time = 0  # time when the coin was collected
         self.duration = 0.5  # duration of the collection animation
         self.is_collected = False
 

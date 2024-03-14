@@ -4,12 +4,12 @@ import os
 class Path:
     def __init__(self):
         self.base_path = None
-        self._base_path_has_been_set = False
+        self.base_path_has_been_set = False
 
     def set_base_path(self, path: str):
-        if not self._base_path_has_been_set:
+        if not self.base_path_has_been_set:
             self.base_path = path
-            self._base_path_has_been_set = True
+            self.base_path_has_been_set = True
         else:
             raise Exception("Base path has already been set")
 

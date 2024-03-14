@@ -11,8 +11,6 @@ from .Screens import SCREENS
 class MenuScreen(Screen):
     def __init__(self, state: GlobalState):
         super().__init__(state)
-        self.half_screen_w = self.state.SCREEN_W // 2
-        self.half_screen_h = self.state.SCREEN_H // 2
         self.button = Button(
             self.state.screen,
             100,
@@ -28,28 +26,30 @@ class MenuScreen(Screen):
         )
 
     def render(self):
+        half_screen_w = self.state.SCREEN_W // 2
+        half_screen_h = self.state.SCREEN_H // 2
         self.state.screen.fill(Colors.WHITE)
         self.state.screen.blit(
             self.background,
             (
-                self.half_screen_w - self.background.get_width() // 2,
-                self.half_screen_h - self.background.get_height() // 2,
+                half_screen_w - self.background.get_width() // 2,
+                half_screen_h - self.background.get_height() // 2,
             ),
         )
-        y = self.half_screen_h - 100
+        y = half_screen_h - 100
         self.state.screen.blit(
             self.title,
             (
-                self.half_screen_w - self.title.get_width() // 2,
+                half_screen_w - self.title.get_width() // 2,
                 y,
             ),
         )
         y += self.title.get_height() + 20
         self.button.draw(
-            x=self.half_screen_w - self.button.width // 2,
+            x=half_screen_w - self.button.width // 2,
             y=y,
         )
 
     def update(self, dt: float = 0.0):
-        if self.button.isClicked():
+        if self.button.is_clicked():
             self.state.change_screen(SCREENS.GAME)
