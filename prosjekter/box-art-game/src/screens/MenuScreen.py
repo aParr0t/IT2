@@ -13,10 +13,10 @@ class MenuScreen(Screen):
         super().__init__(state)
         self.button = Button(
             self.state.screen,
-            100,
-            100,
+            150,
+            50,
             "Start",
-            "red",
+            "#758DAE",
         )
         font = pygame.font.Font(path.rel_path("assets/pixel-font.ttf"), 72)
         self.title = font.render("Speed Circuit", True, Colors.BLACK)
