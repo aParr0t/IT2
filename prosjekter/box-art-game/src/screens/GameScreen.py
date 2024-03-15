@@ -98,7 +98,7 @@ class GameScreen(Screen):
 
         # draw ui and text
         stats = self.font.render(
-            f"Fps: {self.state.clock.get_fps():.0f}", True, Colors.BLACK
+            f"Fps: {self.state.clock.get_fps():.0f}\ne: edit", True, Colors.BLACK
         )
         self.state.screen.blit(stats, (10, 10))
 

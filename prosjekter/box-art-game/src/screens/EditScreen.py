@@ -23,6 +23,7 @@ class EditScreen(Screen):
             (1, 0): ">",
             (-1, 0): "<",
         }
+        self.font = pygame.font.Font(path.rel_path("assets/pixel-font.ttf"), 72)
 
     def reset(self):
         self.state.camera.pos = pygame.Vector2(0, 0)
@@ -92,6 +93,13 @@ class EditScreen(Screen):
             self.state.screen, "blue", (ox * tw - cx, oy * tw - cy, lw, lh), 3
         )
 
+        # draw ui
+        stats = self.font.render(
+            f"e: play\nt: place start\nx: delete", True, Colors.BLACK
+        )
+        pygame.draw.rect(self.state.screen, Colors.WHITE, stats.get_rect(), 0)
+        self.state.screen.blit(stats, (10, 10))
+
     def update(self, dt: float):
         keys = pygame.key.get_pressed()
         move_speed = 200
@@ -106,7 +114,7 @@ class EditScreen(Screen):
             dy += move_speed * dt
         self.state.camera.pos += pygame.Vector2(dx, dy)
 
-        if keys[pygame.K_s]:
+        if keys[pygame.K_t]:
             self.state.level.start = self._get_hovered_tile()
         if keys[pygame.K_x]:
             self.state.level.set_tile(*self._get_hovered_tile(), ".")
